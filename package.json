@@ -1,0 +1,25 @@
+{
+  "name": "workflow",
+  "version": "1.0.0",
+  "description": "My Web Workflow with NPM, SCSS, Gulp and More",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixelisart/workflow.git"
+  },
+  "keywords": [
+    "SCSS",
+    "NPM",
+    "Git",
+    "Gulp"
+  ],
+  "author": "Santino Valenzuela",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pixelisart/workflow/issues"
+  },
+  "homepage": "https://github.com/pixelisart/workflow#readme"
+}
