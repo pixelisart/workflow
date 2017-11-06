@@ -6,3 +6,6 @@ body {
     color: $white;
     font-size: 10px;
 }
+h1:hover {
+    transition: color 1s ease;
+}
