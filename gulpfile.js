@@ -9,11 +9,13 @@ var concat = require('gulp-concat');
 var merge = require('merge-stream');
 var newer = require('gulp-newer');
 var imagemin = require('gulp-imagemin');
+var injectPartials = require('gulp-inject-partials');
 
 // Points all the files that exists in the /src folder
 var SOURCEPATHS = {
     sassSource : 'src/scss/*.scss', // Any file with .scss extension
     htmlSource : 'src/*.html', // Listens to all html files inside the /src folder
+    htmlPartialSource : 'src/partial/*.html',  // These are include files
     jsSource : 'src/js/**', // Listens to any JavaScript files in the /js folder.
     imgSource : 'src/img/**' // This means all folders that are under /img folder. Looks for all types of images: jpg, jpeg, svg, gif etc.
 
@@ -71,11 +73,20 @@ gulp.task('scripts', ['clean-scripts'], function() {
         .pipe(gulp.dest(APPPATH.js))
 });
 
+gulp.task('htmlPartials', function(){
+    return gulp.src(SOURCEPATHS.htmlSource)
+        .pipe(injectPartials())
+        .pipe(gulp.dest(APPPATH.root))
+});
+
+// COMMENTED OUT BECAUSE OF htmlPartials
 // Copies html file from the /src folder to /app folder
+/*
 gulp.task('copy', ['clean-html'], function(){
     gulp.src(SOURCEPATHS.htmlSource)
         .pipe(gulp.dest(APPPATH.root))
 });
+*/
 
 gulp.task('serve', ['sass'], function(){
     // browserSync will initialize all css, js and html when browserSync is initialized.
@@ -86,10 +97,13 @@ gulp.task('serve', ['sass'], function(){
     })
 });
 
-gulp.task('watch', ['serve', 'sass', 'copy', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts', 'images'], function(){
+//  COMMENTED OUT: 'copy',
+gulp.task('watch', ['serve', 'sass', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts', 'images', 'htmlPartials'], function(){
     gulp.watch([SOURCEPATHS.sassSource], ['sass']);
-    gulp.watch([SOURCEPATHS.htmlSource], ['copy']);
+    //gulp.watch([SOURCEPATHS.htmlSource], ['copy']);  // commented out because of htmlPartials.  Not needed.  Doing the same thing.
     gulp.watch([SOURCEPATHS.jsSource], ['scripts']);
+    gulp.watch([SOURCEPATHS.imgSource], ['images']);
+    gulp.watch([SOURCEPATHS.htmlSource, SOURCEPATHS.htmlPartialSource], ['htmlPartials']);
 });
 
 gulp.task('default', ['watch']);
