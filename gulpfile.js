@@ -10,6 +10,9 @@ var merge = require('merge-stream');
 var newer = require('gulp-newer');
 var imagemin = require('gulp-imagemin');
 var injectPartials = require('gulp-inject-partials');
+var minify = require('gulp-minify');
+var rename = require('gulp-rename');
+var cssmin = require('gulp-cssmin');
 
 // Points all the files that exists in the /src folder
 var SOURCEPATHS = {
@@ -72,6 +75,31 @@ gulp.task('scripts', ['clean-scripts'], function() {
         .pipe(browserify())
         .pipe(gulp.dest(APPPATH.js))
 });
+
+/** PRODUCTION TASKS */
+gulp.task('scripts-compressed', function() {
+    gulp.src(SOURCEPATHS.jsSource)
+        .pipe(concat('main.js'))
+        .pipe(browserify())
+        .pipe(minify())
+        .pipe(gulp.dest(APPPATH.js))
+});
+
+gulp.task('css-compressed', function(){
+    
+    var bootstrapCSS = gulp.src('./node_modules/bootstrap/dist/css/bootstrap.min.css');
+    var sassFiles;
+
+    sassFiles = gulp.src(SOURCEPATHS.sassSource)
+        .pipe(autoprefixer())
+        .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
+        return merge(bootstrapCSS, sassFiles)
+            .pipe(concat('app.css'))
+            .pipe(cssmin())
+            .pipe(rename({suffix: '.min'}))
+            .pipe(gulp.dest(APPPATH.css));
+});
+/** END OF PRODUCTION TASKS */
 
 gulp.task('htmlPartials', function(){
     return gulp.src(SOURCEPATHS.htmlSource)
