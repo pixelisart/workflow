@@ -7,12 +7,16 @@ var browserify = require('gulp-browserify');
 var clean = require('gulp-clean');
 var concat = require('gulp-concat');  
 var merge = require('merge-stream');
+var newer = require('gulp-newer');
+var imagemin = require('gulp-imagemin');
 
 // Points all the files that exists in the /src folder
 var SOURCEPATHS = {
     sassSource : 'src/scss/*.scss', // Any file with .scss extension
     htmlSource : 'src/*.html', // Listens to all html files inside the /src folder
-    jsSource : 'src/js/**/*.js' // Listens to any JavaScript files in the /js folder.
+    jsSource : 'src/js/**', // Listens to any JavaScript files in the /js folder.
+    imgSource : 'src/img/**' // This means all folders that are under /img folder. Looks for all types of images: jpg, jpeg, svg, gif etc.
+
 }
 
 // Points all the files that exists in the /app folder
@@ -20,7 +24,8 @@ var APPPATH = {
     root: 'app/',
     css : 'app/css',
     js : 'app/js',
-    fonts : 'app/fonts'
+    fonts : 'app/fonts',
+    img : 'app/img'
 }
 
 // This task is to remove file(s) from /app folder when its corresponding file is removed from the /src folder.
@@ -45,6 +50,13 @@ gulp.task('sass', function(){
         return merge(bootstrapCSS, sassFiles)
             .pipe(concat('app.css'))
             .pipe(gulp.dest(APPPATH.css));
+});
+
+gulp.task('images', function(){
+    return gulp.src(SOURCEPATHS.imgSource)
+        .pipe(newer(APPPATH.img)) // Checks if a new image is added to /src/img, it is copied over to the /app/img prod folder.
+        .pipe(imagemin())
+        .pipe(gulp.dest(APPPATH.img));
 });
 
 gulp.task('moveFonts', function(){
@@ -74,7 +86,7 @@ gulp.task('serve', ['sass'], function(){
     })
 });
 
-gulp.task('watch', ['serve', 'sass', 'copy', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts'], function(){
+gulp.task('watch', ['serve', 'sass', 'copy', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts', 'images'], function(){
     gulp.watch([SOURCEPATHS.sassSource], ['sass']);
     gulp.watch([SOURCEPATHS.htmlSource], ['copy']);
     gulp.watch([SOURCEPATHS.jsSource], ['scripts']);
