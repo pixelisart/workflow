@@ -1,7 +1,7 @@
 # My personal workflow with NPM, SCSS and Gulp
 My Web Workflow with NPM, SCSS, Gulp and More
 
-#Instructions
+# Instructions
 
 1.- Clone this repo or download it from this website.
 
