@@ -1,5 +1,5 @@
 global.jQuery = require('jquery');
-bootstrap = require('bootstrap');
+/*bootstrap = require('bootstrap');
 mustache = require('mustache');
 
 jQuery(document).ready(function($){
@@ -10,4 +10,4 @@ jQuery(document).ready(function($){
         var showTemplate = mustache.render(template, data);
         $('#gallery').html(showTemplate);
     });
-});
+});*/

@@ -38,16 +38,17 @@ var APPPATH = {
 }
 
 gulp.task('subfolder-index', function () {
-    //var target = gulp.src('subfolder/index.html');
-    // It's not necessary to read the files (will speed up things), we're only after their paths:
-    //var sources = gulp.src(['./src/**/*.js', './src/**/*.css'], {read: false});
+    var target = gulp.src('src/subfolder/index.html');
+    //It's not necessary to read the files (will speed up things), we're only after their paths:
+    //var sources = gulp.src(['src/**/*.js', 'src/**/*.css'], {read: false});
+    var sources = gulp.src(['js/customjs.js', 'scss/customcss.scss'], {read: false});
     //var sources = gulp.src([SOURCEPATHS.jsSource, SOURCEPATHS.sassSource], {read: false});
-    //return target.pipe(inject(sources))
-    //    .pipe(gulp.dest(APPPATH.root));
+    return target.pipe(inject(sources))
+       .pipe(gulp.dest(APPPATH.root));
 
-    gulp.src('./src/subfolder/index.html')
-        .pipe(inject(gulp.src(SOURCEPATHS.jsSource), { starttag: '<!-- inject:js:{{ext}} -->'}))
-        .pipe(gulp.dest(APPPATH.root));
+    // gulp.src('./src/subfolder/index.html')
+    //     .pipe(inject(gulp.src('js/customjs.js', { starttag: '<!-- inject:js:{{ext}} -->'}))
+    //     .pipe(gulp.dest(APPPATH.root));
 });
 
 
