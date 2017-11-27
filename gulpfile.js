@@ -14,11 +14,14 @@ var minify = require('gulp-minify');
 var rename = require('gulp-rename');
 var cssmin = require('gulp-cssmin');
 var htmlmin = require('gulp-htmlmin');
+var plumber = require('gulp-plumber');
+var inject = require('gulp-inject');
 
 // Points all the files that exists in the /src folder
 var SOURCEPATHS = {
     sassSource : 'src/scss/*.scss', // Any file with .scss extension
-    htmlSource : 'src/*.html', // Listens to all html files inside the /src folder
+    //htmlSource : 'src/*.html', // Listens to all html files inside the /src folder
+    htmlSource : 'src/**/*.html',
     htmlPartialSource : 'src/partial/*.html',  // These are include files
     jsSource : 'src/js/**', // Listens to any JavaScript files in the /js folder.
     imgSource : 'src/img/**' // This means all folders that are under /img folder. Looks for all types of images: jpg, jpeg, svg, gif etc.
@@ -33,6 +36,20 @@ var APPPATH = {
     fonts : 'app/fonts',
     img : 'app/img'
 }
+
+gulp.task('subfolder-index', function () {
+    //var target = gulp.src('subfolder/index.html');
+    // It's not necessary to read the files (will speed up things), we're only after their paths:
+    //var sources = gulp.src(['./src/**/*.js', './src/**/*.css'], {read: false});
+    //var sources = gulp.src([SOURCEPATHS.jsSource, SOURCEPATHS.sassSource], {read: false});
+    //return target.pipe(inject(sources))
+    //    .pipe(gulp.dest(APPPATH.root));
+
+    gulp.src('./src/subfolder/index.html')
+        .pipe(inject(gulp.src(SOURCEPATHS.jsSource), { starttag: '<!-- inject:js:{{ext}} -->'}))
+        .pipe(gulp.dest(APPPATH.root));
+});
+
 
 // This task is to remove file(s) from /app folder when its corresponding file is removed from the /src folder.
 gulp.task('clean-html', function(){
@@ -50,7 +67,13 @@ gulp.task('sass', function(){
     var bootstrapCSS = gulp.src('./node_modules/bootstrap/dist/css/bootstrap.min.css');
     var sassFiles;
 
+    /* this.emit('end') - Tells Gulp to stop running the rest of the process in the task but keep running Gulp. */
     sassFiles = gulp.src(SOURCEPATHS.sassSource)
+        // .pipe(plumber(function(){
+        //     console.log('Styles Task Error.');
+        //     console.log(err);
+        //     this.emit('end');  
+        // }))
         .pipe(autoprefixer())
         .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
         return merge(bootstrapCSS, sassFiles)
@@ -124,6 +147,9 @@ gulp.task('copy', ['clean-html'], function(){
 });
 */
 
+
+
+
 gulp.task('serve', ['sass'], function(){
     // browserSync will initialize all css, js and html when browserSync is initialized.
     browserSync.init([APPPATH.css + '/*.css', APPPATH.root + '/*.html', APPPATH.js + '/*.js'], {
@@ -134,7 +160,7 @@ gulp.task('serve', ['sass'], function(){
 });
 
 //  COMMENTED OUT: 'copy',
-gulp.task('watch', ['serve', 'sass', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts', 'images', 'htmlPartials'], function(){
+gulp.task('watch', ['serve', 'sass', 'clean-html', 'clean-scripts', 'scripts', 'moveFonts', 'images', 'htmlPartials', 'subfolder-index'], function(){
     gulp.watch([SOURCEPATHS.sassSource], ['sass']);
     //gulp.watch([SOURCEPATHS.htmlSource], ['copy']);  // commented out because of htmlPartials.  Not needed.  Doing the same thing.
     gulp.watch([SOURCEPATHS.jsSource], ['scripts']);
